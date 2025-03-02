@@ -183,5 +183,11 @@ def start(
         console.print("\nExiting the simulator...")
         container_manager.remove_container(container_id)
 
+# Set the start command as the default command
+@app.callback()
+def callback():
+    """Linux Troubleshooting Simulator - An interactive application for practicing Linux troubleshooting skills."""
+    pass
+
 if __name__ == "__main__":
     app() 
