@@ -107,7 +107,7 @@ def start(
             
             if action == "hint":
                 hint = hint_provider.get_hint(issue)
-                console.print(f"\n[bold]Hint:[/bold] {hint}")
+                console.print(f"\n[bold]{hint}[/bold]")
             
             elif action == "verify":
                 result, feedback = solution_verifier.verify_solution(container_id, issue)

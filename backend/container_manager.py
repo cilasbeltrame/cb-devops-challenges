@@ -59,6 +59,7 @@ RUN apt-get update && apt-get install -y \\
     iputils-ping \\
     dnsutils \\
     iproute2 \\
+    man-db \\
     && rm -rf /var/lib/apt/lists/*
 
 # Copy setup script
@@ -76,12 +77,12 @@ CMD ["tail", "-f", "/dev/null"]
         
         # Build the Docker image using subprocess
         print("Building Docker image... (this may take a few minutes)")
-        image_tag = f"linux-troubleshooting-{issue['id']}"
+        image_tag = f"linux-troubleshooting-{issue['id'].lower()}"
         subprocess.run(["docker", "build", "-t", image_tag, temp_dir], check=True)
         
         # Create and start the container using subprocess
         print("Creating and starting container...")
-        container_name = f"linux-issue-{issue['id']}"
+        container_name = f"linux-issue-{issue['id'].lower()}"
         result = subprocess.run(
             ["docker", "run", "-d", "--name", container_name, "-t", image_tag],
             capture_output=True, text=True, check=True

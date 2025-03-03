@@ -6,3 +6,5 @@ rich==13.6.0
 prompt-toolkit==3.0.39
 typer==0.9.0
 pydantic==1.10.8
+flask==2.3.3
+flask-cors==4.0.0
