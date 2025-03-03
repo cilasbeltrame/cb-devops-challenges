@@ -79,6 +79,8 @@ The scenario should include:
 The setup script should create a realistic issue that a system administrator might encounter.
 The verification script should check if the issue has been resolved and exit with code 0 if successful.
 
+IMPORTANT: Do not use systemd services or any scripts that configure systemd units in your scenarios, as Docker containers typically do not use systemd. Instead, use traditional service management methods like direct process management, init scripts, or supervisor alternatives that are compatible with containers.
+
 Respond with a JSON object in the following format:
 {{
   "id": "unique-id",

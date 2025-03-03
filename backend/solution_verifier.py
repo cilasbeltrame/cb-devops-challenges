@@ -57,8 +57,9 @@ def verify_solution(container_id: str, issue: Dict[str, Any]) -> Tuple[bool, str
             return False, generate_failure_feedback(issue, result)
     finally:
         # Clean up
-        os.unlink(verification_script_path)
-        subprocess.run(["docker", "exec", container_id, "rm", "-f", "/tmp/verification_script.sh"], check=False)
+        pass
+        # os.unlink(verification_script_path)
+        # subprocess.run(["docker", "exec", container_id, "rm", "-f", "/tmp/verification_script.sh"], check=False)
 
 def generate_success_feedback(issue: Dict[str, Any]) -> str:
     """
