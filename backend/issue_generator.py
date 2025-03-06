@@ -114,22 +114,38 @@ The verification script should check if the issue has been resolved and exit wit
 
 IMPORTANT: Do not use systemd services or any scripts that configure systemd units in your scenarios, as Docker containers typically do not use systemd. Instead, use traditional service management methods like direct process management, init scripts, or supervisor alternatives that are compatible with containers.
 
-IMPORTANT FOR BACKGROUND PROCESSES: When creating scenarios that involve background processes, ensure they are started in a way that persists throughout the container's lifetime. Use techniques such as:
-1. Use 'nohup' with output redirection to /dev/null and append '&' at the end
-2. Create a simple init script in /etc/init.d/ and ensure it's called at container startup
-3. Write the process to a file in /tmp/ or create a PID file to track it
-4. Add a check in the setup script to verify the process is actually running before completing
+CRITICAL FOR BACKGROUND PROCESSES: When creating scenarios that involve background processes or services (like Apache, NGINX, etc.), you MUST ensure they are started in a way that persists throughout the container's lifetime. Follow these guidelines:
 
-For example:
-```
+1. Always use 'nohup' with output redirection to /dev/null and append '&' at the end
+2. Save the PID to a file for later verification
+3. Add a verification step in the setup script to confirm the process is actually running
+4. For services like Apache or NGINX, use their control scripts (apache2ctl, nginx -g, etc.)
+
+Example for starting a background process:
+```bash
 # Start a background process that will persist
 nohup /path/to/process > /dev/null 2>&1 &
-echo $! > /tmp/process.pid  # Save the PID for later verification
+PID=$!
+echo $PID > /tmp/process.pid
 
 # Verify the process is running before completing setup
 sleep 2
-if ! ps -p $(cat /tmp/process.pid) > /dev/null; then
+if ! ps -p $PID > /dev/null; then
   echo "Failed to start background process"
+  exit 1
+fi
+```
+
+Example for starting Apache:
+```bash
+# Start Apache in the background
+apache2ctl start
+# or for HTTPD: httpd -k start
+
+# Verify it's running
+sleep 2
+if ! pgrep apache2 > /dev/null; then
+  echo "Failed to start Apache"
   exit 1
 fi
 ```
