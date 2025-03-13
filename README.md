@@ -58,7 +58,7 @@ Below is a screenshot showing the application in action:
 
 2. Start the application:
    ```
-   python main.py
+   python main.py start
    ```
    
    You can specify a difficulty level:
