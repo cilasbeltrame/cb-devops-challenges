@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Linux Troubleshooting Simulator - Main Application
+DevOps Troubleshooting Simulator - Main Application
 """
 
 import os
@@ -38,12 +38,12 @@ def start(
     difficulty: str = typer.Option("medium", help="Difficulty level: easy, medium, hard"),
     debug: bool = typer.Option(False, help="Enable debug mode for detailed error information")
 ):
-    """Start the Linux Troubleshooting Simulator."""
+    """Start the DevOps Troubleshooting Simulator."""
     if not check_requirements():
         sys.exit(1)
     
     console.print(Panel.fit(
-        "[bold green]Linux Troubleshooting Simulator[/bold green]\n\n"
+        "[bold green]DevOps Troubleshooting Simulator[/bold green]\n\n"
         "Welcome! This application will generate real Linux issues in containers,\n"
         "provide hints when requested, and verify your solutions.",
         title="Welcome",
@@ -163,7 +163,7 @@ def start(
                     else:
                         # Clean up the container before exiting
                         container_manager.remove_container(container_id)
-                        console.print("Thank you for using the Linux Troubleshooting Simulator!")
+                        console.print("Thank you for using the DevOps Troubleshooting Simulator!")
                         break
                 else:
                     console.print(Panel.fit(
@@ -176,7 +176,7 @@ def start(
             elif action == "quit":
                 # Clean up the container
                 container_manager.remove_container(container_id)
-                console.print("Thank you for using the Linux Troubleshooting Simulator!")
+                console.print("Thank you for using the DevOps Troubleshooting Simulator!")
                 break
     except KeyboardInterrupt:
         # Ensure container cleanup on keyboard interrupt
@@ -186,7 +186,7 @@ def start(
 # Set the start command as the default command
 @app.callback()
 def callback():
-    """Linux Troubleshooting Simulator - An interactive application for practicing Linux troubleshooting skills."""
+    """DevOps Troubleshooting Simulator - An interactive application for practicing Linux troubleshooting skills."""
     pass
 
 if __name__ == "__main__":

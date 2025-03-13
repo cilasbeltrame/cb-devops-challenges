@@ -1,13 +1,21 @@
-# Linux Troubleshooting Simulator
+# CB DevOps Challenges
 
-An interactive application that generates real Linux issues in containers, provides hints, and verifies solutions.
+An interactive application that generates real-world DevOps challenges in containers, provides hints, and verifies solutions. Currently focused on Linux troubleshooting, with more skills to be added in the future.
+
+I built this project to keep reviewing and updating my DevOps skills, creating a hands-on learning environment for continuous improvement. I believe that strong Linux skills are the most important foundation for any DevOps professional, which is why this project initially focuses on Linux-based challenges.
+
+## Application Preview
+
+Below is a screenshot showing the application in action:
+
+![CB DevOps Challenges in action](img/howto.png)
 
 ## Features
 
-- Generates realistic Linux issues using LLM integration
-- Runs issues in isolated Docker containers
+- Generates realistic DevOps challenges using LLM integration
+- Runs challenges in isolated Docker containers
 - Provides hints when requested
-- Verifies if the user's solution correctly resolves the issue
+- Verifies if the user's solution correctly resolves the challenge
 - Tracks user progress and learning
 
 ## Requirements
@@ -21,46 +29,26 @@ An interactive application that generates real Linux issues in containers, provi
 1. Clone this repository:
    ```
    git clone <repository-url>
-   cd linux-troubleshooting-simulator
+   cd cb-devops-challenges/backend
    ```
 
-2. Run the setup script (recommended):
-   ```
-   python setup.py
-   ```
-   This script will:
-   - Check if Python 3.9+ is installed
-   - Install required dependencies
-   - Help you set up your OpenAI API key
-
-   Alternatively, you can install dependencies manually:
+2. Install the dependencies:
    ```
    python -m venv venv
    source venv/bin/activate  # On Windows: venv\Scripts\activate
    pip install -r requirements.txt
    ```
 
-   **Note:** If you encounter installation issues related to Rust compiler requirements, you have two options:
-   
-   - Option 1: Install Rust using rustup:
-     ```
-     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-     source "$HOME/.cargo/env"
-     pip install -r requirements.txt
-     ```
-   
-   - Option 2: We've configured the requirements.txt to use an older version of pydantic that doesn't require Rust compilation, which should work for most users.
-
-3. Set up your environment variables (if not done via setup.py):
-   Create a `.env` file in the project root and add your OpenAI API key:
-   ```
-   OPENAI_API_KEY=your_api_key_here
-   ```
-   
-   Alternatively, you can export it directly:
+3. Set up your environment variable and add your OpenAI API key:
    ```
    export OPENAI_API_KEY=your_api_key_here
    ```
+
+## Current Limitations & Future Plans
+
+- **LLM Support**: Currently only supports OpenAI's API. Support for additional LLM providers is on the roadmap.
+- **Container Runtime**: Planning to migrate to Sysbox runtime for Docker, which will enable more realistic challenges by abstracting the container layer and supporting systemd, allowing for more complex system-level scenarios.
+- **User Interface**: A frontend layer is planned to improve user experience and provide a more convenient interface for interacting with challenges.
 
 ## Step-by-Step User Guide
 
@@ -79,7 +67,7 @@ An interactive application that generates real Linux issues in containers, provi
    ```
    Options are: easy, medium (default), hard
 
-3. The application will check requirements and generate a Linux issue.
+3. The application will check requirements and generate a challenge.
 
 4. You'll see:
    - Challenge title
@@ -96,7 +84,7 @@ An interactive application that generates real Linux issues in containers, provi
    ```
 
 2. **Investigate the Issue**:
-   Use Linux commands to diagnose and troubleshoot the problem.
+   Use appropriate commands to diagnose and troubleshoot the problem.
    
 3. **Request Hints** (if needed):
    - In the main application window (not the container terminal), you'll see a prompt asking "What would you like to do?"
@@ -119,7 +107,7 @@ An interactive application that generates real Linux issues in containers, provi
 7. **Exit the Application**:
    Type `quit` when prompted for an action to clean up containers and exit.
 
-### Example Walkthrough: DNS Resolution Issue
+### Example Walkthrough: Linux DNS Resolution Issue
 
 1. Start the application and connect to the container.
 
@@ -141,57 +129,13 @@ An interactive application that generates real Linux issues in containers, provi
    ```
    You'll see it's empty or has only comments.
 
-5. Try to modify the file:
+5. Add proper DNS nameservers to the file:
    ```
    echo "nameserver 8.8.8.8" > /etc/resolv.conf
-   ```
-   This will fail because the file is immutable.
-
-6. Request a hint from the main application:
-   - In the main application window, type `hint` when prompted
-   - You might receive a hint like: "Check the DNS configuration files in the system."
-   - Request another hint if needed: "Look at the contents of /etc/resolv.conf file."
-   - And another if still stuck: "If you can't modify /etc/resolv.conf directly, check if it has special attributes with 'lsattr /etc/resolv.conf'."
-
-7. Check file attributes:
-   ```
-   lsattr /etc/resolv.conf
-   ```
-   You'll see it has the immutable attribute.
-
-8. Remove the immutable attribute:
-   ```
-   chattr -i /etc/resolv.conf
+   echo "nameserver 8.8.4.4" >> /etc/resolv.conf
    ```
 
-9. Add a nameserver:
+6. Test DNS resolution again:
    ```
-   echo "nameserver 8.8.8.8" > /etc/resolv.conf
+   ping google.com
    ```
-
-10. Verify your solution:
-    - In the main application window, type `verify`
-    - You'll receive a success message with an explanation of the solution
-
-### Additional Commands
-
-- **List Available Scenarios**:
-  ```
-  python main.py list-scenarios
-  ```
-  This will show all predefined scenarios available in the application.
-
-## Project Structure
-
-- `main.py`: Entry point for the application
-- `container_manager.py`: Handles Docker container creation and management
-- `issue_generator.py`: Integrates with LLM to generate Linux issues
-- `solution_verifier.py`: Checks if the user's solution resolves the issue
-- `hint_provider.py`: Generates hints based on the current issue
-- `scenarios/`: Directory containing predefined issue scenarios
-- `templates/`: Docker templates for different Linux environments
-- `utils/`: Utility functions and helpers
-
-## License
-
-MIT 
