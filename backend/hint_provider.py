@@ -16,14 +16,14 @@ def get_hint(issue: Dict[str, Any]) -> str:
         issue: Issue details
         
     Returns:
-        Hint string
+        Hint string with enumeration (e.g., "Hint 1: Check network connectivity")
     """
     issue_id = issue["id"]
     hints = issue.get("hints", [])
     
     if not hints:
         # Generate a generic hint if no hints are available
-        return generate_generic_hint(issue)
+        return "Hint 1: " + generate_generic_hint(issue)
     
     # Initialize hint index for this issue if not already done
     if issue_id not in hint_indices:
@@ -37,15 +37,15 @@ def get_hint(issue: Dict[str, Any]) -> str:
         hint = hints[current_index]
         # Increment the hint index for next time
         hint_indices[issue_id] = current_index + 1
-        return hint
+        return f"Hint {current_index + 1}: {hint}"
     else:
         # If we've exhausted all hints, either cycle back to the beginning or generate a new one
         if random.random() < 0.7:  # 70% chance to cycle back
             hint_indices[issue_id] = 0
-            return hints[0]
+            return f"Hint 1: {hints[0]}"
         else:
             # Generate a more specific hint
-            return generate_specific_hint(issue)
+            return f"Hint {len(hints) + 1}: {generate_specific_hint(issue)}"
 
 def generate_generic_hint(issue: Dict[str, Any]) -> str:
     """

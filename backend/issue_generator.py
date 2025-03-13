@@ -18,7 +18,29 @@ CHALLENGE_TYPES = {
         "permissions",
         "service_configuration",
         "resource_usage",
-        "package_management"
+        "package_management",
+        "database_issues",
+        "web_server_configuration",
+        "log_analysis",
+        "security_hardening",
+        "backup_recovery",
+        "cron_job_troubleshooting",
+        "disk_space_management",
+        "memory_leaks",
+        "cpu_bottlenecks",
+        "container_issues",
+        "shell_scripting_bugs",
+        "environment_variables",
+        "user_management",
+        "firewall_rules",
+        "dns_resolution",
+        "load_balancing",
+        "proxy_configuration",
+        "file_corruption",
+        "symbolic_link_issues",
+        "kernel_parameters",
+        "hardware_detection",
+        "virtualization_problems"
     ]
 }
 
@@ -50,6 +72,17 @@ def validate_issue(issue):
     if not isinstance(issue["hints"], list) or len(issue["hints"]) < 2:
         return False
     
+    # Check for proper background process handling if the issue mentions processes
+    description_lower = issue["description"].lower()
+    if any(term in description_lower for term in ["process", "daemon", "service", "running"]):
+        setup_script_lower = issue["setup_script"].lower()
+        if "nohup" not in setup_script_lower and "background" in description_lower:
+            print("Warning: Issue mentions background processes but setup script doesn't use nohup")
+            # Don't fail validation, but print a warning
+        if "&" not in setup_script_lower and "background" in description_lower:
+            print("Warning: Issue mentions background processes but setup script doesn't use & for backgrounding")
+            # Don't fail validation, but print a warning
+    
     return True
 
 def create_issue_prompt(difficulty, category, challenge_type="linux"):
@@ -79,6 +112,44 @@ The scenario should include:
 The setup script should create a realistic issue that a system administrator might encounter.
 The verification script should check if the issue has been resolved and exit with code 0 if successful.
 
+IMPORTANT: Do not use systemd services or any scripts that configure systemd units in your scenarios, as Docker containers typically do not use systemd. Instead, use traditional service management methods like direct process management, init scripts, or supervisor alternatives that are compatible with containers.
+
+CRITICAL FOR BACKGROUND PROCESSES: When creating scenarios that involve background processes or services (like Apache, NGINX, etc.), you MUST ensure they are started in a way that persists throughout the container's lifetime. Follow these guidelines:
+
+1. Always use 'nohup' with output redirection to /dev/null and append '&' at the end
+2. Save the PID to a file for later verification
+3. Add a verification step in the setup script to confirm the process is actually running
+4. For services like Apache or NGINX, use their control scripts (apache2ctl, nginx -g, etc.)
+
+Example for starting a background process:
+```bash
+# Start a background process that will persist
+nohup /path/to/process > /dev/null 2>&1 &
+PID=$!
+echo $PID > /tmp/process.pid
+
+# Verify the process is running before completing setup
+sleep 2
+if ! ps -p $PID > /dev/null; then
+  echo "Failed to start background process"
+  exit 1
+fi
+```
+
+Example for starting Apache:
+```bash
+# Start Apache in the background
+apache2ctl start
+# or for HTTPD: httpd -k start
+
+# Verify it's running
+sleep 2
+if ! pgrep apache2 > /dev/null; then
+  echo "Failed to start Apache"
+  exit 1
+fi
+```
+
 Respond with a JSON object in the following format:
 {{
   "id": "unique-id",
@@ -86,7 +157,7 @@ Respond with a JSON object in the following format:
   "description": "Detailed description of the problem",
   "category": "{category}",
   "difficulty": "{difficulty}",
-  "setup_script": "#!/bin/bash\\n# Script that sets up the issue",
+  "setup_script": "#!/bin/bash\\n# Script that sets up the issue.\\n\\n# If your scenario requires a background process, use this pattern:\\n# nohup /path/to/process > /dev/null 2>&1 &\\n# PID=$!\\n# echo $PID > /tmp/process.pid\\n# sleep 2\\n# if ! ps -p $PID > /dev/null; then\\n#   echo 'Process failed to start'\\n#   exit 1\\n# fi",
   "verification_script": "#!/bin/bash\\n# Script that verifies the solution",
   "hints": [
     "First hint - general guidance",
